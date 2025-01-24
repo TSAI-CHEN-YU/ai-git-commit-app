@@ -1,5 +1,9 @@
 # compiled output
-/web-client/node_modules/*
+/web-client/package-lock.json
+/web-client/node_modules/
+/web-client/dist/
+/web-client/.env
+/web-client/*.log
 
 # OS
 .DS_Store

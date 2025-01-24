@@ -2,31 +2,53 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Git Diff Viewer</title>
+    <title>AI Commit Generator</title>
     <style>
-      pre {
-        background: #f0f0f0;
-        padding: 10px;
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      #repoPath {
+        margin-left: 10px;
+        color: #666;
+      }
+      #commitMessage {
+        width: 100%;
+        height: 100px;
+        margin: 10px 0;
+        padding: 8px;
+        border: 1px solid #ccc;
+      }
+      button {
+        padding: 8px 16px;
+        cursor: pointer;
+      }
+      .disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
       }
     </style>
   </head>
   <body>
-    <h1>Git Diff 結果</h1>
-    <button onclick="runGitDiff()">執行 git diff</button>
-    <pre id="output"></pre>
+    <h1>AI Commit Message Generator</h1>
 
-    <script>
-      async function runGitDiff() {
-        try {
-          // 替換成你的 Git 倉庫路徑（例如：/Users/yourname/sampleGit）
-          const repoPath =
-            "/Users/admin/CHT/project/智慧醫療/SmartWard/Scripts";
-          const output = await window.electronAPI.executeGitDiff(repoPath);
-          document.getElementById("output").textContent = output;
-        } catch (error) {
-          document.getElementById("output").textContent = `錯誤: ${error}`;
-        }
-      }
-    </script>
+    <div>
+      <button id="selectRepoBtn">選擇 Git 倉庫</button>
+      <span id="repoPathDisplay">尚未選擇倉庫</span>
+    </div>
+
+    <div>
+      <input
+        type="password"
+        id="apiKeyInput"
+        placeholder="輸入 DeepSeek API 金鑰"
+      />
+      <button id="generateBtn" class="disabled" disabled>生成提交訊息</button>
+    </div>
+
+    <textarea id="commitMessage" readonly></textarea>
+    <button id="copyBtn" class="disabled" disabled>複製到剪貼簿</button>
+
+    <script src="./renderer.js"></script>
   </body>
 </html>
