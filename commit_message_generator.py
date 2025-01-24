@@ -15,7 +15,7 @@ def get_git_diff(repo_path):
     """Get git diff output for the repository"""
     try:
         result = subprocess.run(
-            ["git", "--no-pager", "diff"],
+            ["git", "diff", "--cached"],
             cwd=repo_path,
             capture_output=True,
             text=True,
