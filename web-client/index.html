@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Git Diff Viewer</title>
+    <style>
+      pre {
+        background: #f0f0f0;
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Git Diff 結果</h1>
+    <button onclick="runGitDiff()">執行 git diff</button>
+    <pre id="output"></pre>
+
+    <script>
+      async function runGitDiff() {
+        try {
+          // 替換成你的 Git 倉庫路徑（例如：/Users/yourname/sampleGit）
+          const repoPath =
+            "/Users/admin/CHT/project/智慧醫療/SmartWard/Scripts";
+          const output = await window.electronAPI.executeGitDiff(repoPath);
+          document.getElementById("output").textContent = output;
+        } catch (error) {
+          document.getElementById("output").textContent = `錯誤: ${error}`;
+        }
+      }
+    </script>
+  </body>
+</html>
