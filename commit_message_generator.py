@@ -7,7 +7,7 @@ from tkinter import ttk, filedialog, messagebox
 import pyperclip
 
 # Configuration
-API_KEY = "<DeepSeek API Key>"
+API_KEY = "sk-3e98e85559a148bcaa0bec93e4c702a1"
 
 client = OpenAI(api_key=API_KEY, base_url="https://api.deepseek.com")
 
@@ -131,14 +131,33 @@ class CommitMessageGeneratorApp:
     
     def generate_message(self):
         """Generate commit message for selected repository"""
+        # Disable UI elements during generation
+        self.generate_button.config(state=tk.DISABLED)
+        self.browse_button.config(state=tk.DISABLED)
+        self.copy_button.config(state=tk.DISABLED)
+        
+        # Create and show progress bar
+        self.progress = ttk.Progressbar(
+            self.root,
+            mode='indeterminate',
+            length=400
+        )
+        self.progress.pack(pady=10)
+        self.progress.start()
+        
+        # Update UI to show we're working
+        self.root.update()
+        
         repo_path = self.repo_entry.get()
         
         if not os.path.isdir(repo_path):
             messagebox.showerror("Error", "Invalid directory path")
+            self.reset_ui_state()
             return
             
         if not os.path.isdir(os.path.join(repo_path, ".git")):
             messagebox.showerror("Error", "Not a valid git repository")
+            self.reset_ui_state()
             return
             
         diff_output = get_git_diff(repo_path)
@@ -148,9 +167,25 @@ class CommitMessageGeneratorApp:
                 self.message_text.delete(1.0, tk.END)
                 self.message_text.insert(tk.END, commit_message)
                 self.copy_button.config(state=tk.NORMAL)
-                return
+            
+            # Stop progress and clean up
+            self.progress.stop()
+            self.progress.destroy()
+            self.reset_ui_state()
+            return
                 
         messagebox.showinfo("Info", "No changes detected or failed to generate commit message")
+        self.reset_ui_state()
+        
+    def reset_ui_state(self):
+        """Reset UI elements to their default state"""
+        self.generate_button.config(state=tk.NORMAL)
+        self.browse_button.config(state=tk.NORMAL)
+        if self.message_text.get(1.0, tk.END).strip():
+            self.copy_button.config(state=tk.NORMAL)
+        if hasattr(self, 'progress'):
+            self.progress.stop()
+            self.progress.destroy()
     
     def copy_to_clipboard(self):
         """Copy commit message to clipboard"""
