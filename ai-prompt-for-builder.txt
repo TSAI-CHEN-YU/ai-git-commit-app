@@ -1,0 +1,110 @@
+
+
+我想要製作一個小應用，這個應用應該做到以下事情：
+- 應用程序目標：使用者選擇一個git倉庫，應用程序會查看該git倉庫中尚未提交的改動，調用生成式AI的API，總結這些改動，產生git提交訊息給使用者
+- 應該要非常容易執行，不受環境影響
+- 提供簡易使用者介面，使用者可選擇一個資料夾的路徑，選擇後底下有一個文字框會顯示結果，此結果附帶一個複製按鈕，一件複製文字結果
+- 調用api的示範：
+$ curl https://api.deepseek.com/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-3e98e85559a148bcaa0bec93e4c702a9" \
+  -d '{
+        "model": "deepseek-chat",
+        "messages": [
+          {"role": "system", "content": "You are a helpful assistant."},
+          {"role": "user", "content": "Hello!"}
+        ],
+        "stream": false
+      }'
+{"id":"db1cc3b2-8363-481f-8719-7eb4060f3165","object":"chat.completion","created":1737621938,"model":"deepseek-chat","choices":[{"index":0,"message":{"role":"assistant","content":"Hello! How can I assist you today? 😊"},"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":11,"completion_tokens":11,"total_tokens":22,"prompt_tokens_details":{"cached_tokens":0},"prompt_cache_hit_tokens":0,"prompt_cache_miss_tokens":11},"system_fingerprint":"fp_3a5770e1b4"}
+- 可能的執行邏輯如下，僅供參考，一切以目標為主，請使用最能達成目標的最佳解決方案:
+    * 用git diff取得修改前後差異
+    * 給模型事前提示，確保模型應該專注回應任務，事前提示範例：
+    You are an expert Git user and software engineer with over a decade of experience in version control systems. Your specialty lies in analyzing git diff outputs and crafting precise, meaningful, and well-structured commit messages that follow best practices, such as using conventional commit types like feat, fix, refactor, docs, style, test, and chore.  
+    Your task is to analyze the git diff output I provide and generate a concise, accurate, and professional commit message that clearly describes the changes made. The commit message should follow the conventional commit format, including a type, optional scope, and a succinct description.  
+    Here is the git diff output for you to analyze:  
+    __________  
+    
+    Keep the following in mind while crafting the commit message:  
+    
+    Focus on the most significant changes and avoid unnecessary details.  
+    Use the appropriate commit type (feat, fix, refactor, etc.) based on the nature of the changes.  
+    If applicable, include a scope to specify the part of the codebase affected (e.g., (auth), (ui), (api)).  
+    Ensure the description is clear, concise, and actionable.  
+    If the changes are complex or involve multiple logical changes, consider breaking them into multiple commit messages.
+    
+    For example, if the git diff shows changes to fix a bug in the authentication module, a good commit message might look like:  
+    fix(auth): resolve null pointer exception during login  
+    
+    Or, if the changes introduce a new feature, it could look like:  
+    feat(api): add support for pagination in user list endpoint  
+    
+    Now, analyze the provided git diff output and generate the most appropriate commit message.
+
+
+----------------------------------------------------------------------
+
+Create a detailed system prompt for a language model to assist in developing a small application that generates git commit messages using AI.
+
+The application should allow users to select a git repository, identify uncommitted changes, and use a generative AI API to summarize these changes into a git commit message. The application must be easy to execute and environment-independent, featuring a simple user interface where users can select a folder path and view the generated commit message in a text box with a copy button.
+
+# Steps
+
+1. **User Interface Design**: 
+   - Create a simple UI with a file picker for selecting a git repository folder.
+   - Include a text box to display the generated commit message.
+   - Add a button to copy the commit message to the clipboard.
+
+2. **Git Operations**:
+   - Use `git diff` to obtain the differences between the current state and the last commit.
+   - Ensure the application can handle different environments and configurations.
+
+3. **API Integration**:
+   - Integrate with the generative AI API using the provided curl example as a reference.
+   - Send the `git diff` output to the API with a system prompt that guides the AI to generate a commit message.
+
+4. **AI Prompt Design**:
+   - Use a detailed system prompt to instruct the AI on how to analyze the `git diff` and generate a commit message.
+   - Ensure the prompt includes guidelines for using conventional commit types and focusing on significant changes.
+
+5. **Commit Message Generation**:
+   - Receive the AI-generated commit message and display it in the UI.
+   - Allow users to copy the message with a single click.
+
+# Output Format
+
+The output should be a concise and professional git commit message following the conventional commit format. It should include:
+- A commit type (e.g., feat, fix, refactor).
+- An optional scope (e.g., (auth), (ui)).
+- A succinct description of the changes.
+
+# Examples
+
+**Example 1:**
+- **Input**: `git diff` output showing changes to fix a bug in the authentication module.
+- **AI Prompt**: "Analyze the following git diff and generate a commit message."
+- **Output**: `fix(auth): resolve null pointer exception during login`
+
+**Example 2:**
+- **Input**: `git diff` output showing new feature addition in the API.
+- **AI Prompt**: "Analyze the following git diff and generate a commit message."
+- **Output**: `feat(api): add support for pagination in user list endpoint`
+
+# Notes
+
+- Ensure the AI prompt is clear and instructs the model to focus on significant changes.
+- The application should be user-friendly and not require complex setup or dependencies.
+- Consider edge
+- AI API curl example:
+$ curl https://api.deepseek.com/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <DeepSeek API Key>" \
+  -d '{
+        "model": "deepseek-chat",
+        "messages": [
+          {"role": "system", "content": "You are a helpful assistant."},
+          {"role": "user", "content": "Hello!"}
+        ],
+        "stream": false
+      }'
+$ {"id":"db1cc3b2-8363-481f-8719-7eb4060f3165","object":"chat.completion","created":1737621938,"model":"deepseek-chat","choices":[{"index":0,"message":{"role":"assistant","content":"Hello! How can I assist you today? 😊"},"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":11,"completion_tokens":11,"total_tokens":22,"prompt_tokens_details":{"cached_tokens":0},"prompt_cache_hit_tokens":0,"prompt_cache_miss_tokens":11},"system_fingerprint":"fp_3a5770e1b4"}
