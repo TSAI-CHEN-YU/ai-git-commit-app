@@ -7,7 +7,7 @@ from tkinter import ttk, filedialog, messagebox
 import pyperclip
 
 # Configuration
-API_KEY = "sk-3e98e85559a148bcaa0bec93e4c702a1"
+API_KEY = "API key"
 
 client = OpenAI(api_key=API_KEY, base_url="https://api.deepseek.com")
 
